@@ -4,9 +4,323 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Coffe"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        WindowStartupLocation="CenterScreen"
+        Icon="./Resources/logo.ico"
+        Title="Мои рецепты" MinHeight="400" MinWidth="650" Height="605" Width="935.5" Loaded="Window_Loaded">
+    <Grid x:Name="appContent">
+        <Label Height="127" BorderBrush="Black" BorderThickness="0 , 1 , 1 , 0" HorizontalAlignment="Left" Panel.ZIndex="1" VerticalContentAlignment="Center" HorizontalContentAlignment="Center" VerticalAlignment="Top" Background="White" Width="119">
+            <Image Source="./Resources/logo.png" Height="107"/>
+        </Label>
+
+        <Label BorderBrush="Black" BorderThickness="0 , 0 , 1 , 0" Background="#FFFED7C1" HorizontalAlignment="Left" Width="119">
+            <Grid Height="440">
+                <Button x:Name="openProducts" Click="OpenProducts_Click" VerticalAlignment="Top" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="0,132,0,0">Блюда</Button>
+                <Button x:Name="openIngredients" Click="OpenIngredients_Click" VerticalAlignment="Top" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="0,170,0,0">Ингредиенты</Button>
+                <Button x:Name="openOrders" Click="OpenOrders_Click" VerticalAlignment="Top" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="0,208,0,0">Заказы</Button>
+                <Button x:Name="createOrder" Click="CreateOrder_Click" VerticalAlignment="Top" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="0,246,0,0">Оформить</Button>
+            </Grid>
+        </Label>
+        <Button x:Name="exit" Click="Exit_Click" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="10,0,0,10" Content="Выход" Height="33" HorizontalAlignment="Left" VerticalAlignment="Bottom" Width="96"/>
+        <Label x:Name="title" BorderBrush="#FFFDB249" BorderThickness="0 , 1 , 0, 7" VerticalAlignment="Top" FontFamily="Comic Sans MS Bold" FontSize="35" VerticalContentAlignment="Center" Margin="122,0,10,0">Заголовок</Label>
+        <Label BorderBrush="Black" BorderThickness="0 , 1 , 0, 0" VerticalAlignment="Top" FontFamily="Comic Sans MS Bold" FontSize="35" Margin="119,0,0,0"/>
+
+        <!--Форма списка заказов-->
+        <Grid x:Name="ordersPage" IsVisibleChanged="OrdersPage_IsVisibleChanged" Visibility="Hidden" Margin="124,72,10,10">
+            <Grid x:Name="orders" Margin="10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="60"/>
+                </Grid.RowDefinitions>
+                
+                <Label x:Name="ordersH1" FontFamily="Comic Sans MS" Grid.Column="0" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="Пользователь"/>
+                <Label x:Name="ordersH3" FontFamily="Comic Sans MS" Grid.Column="2" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="Действия"/>
+            </Grid>
+        </Grid>
         
+        <!--Форма добавления ингредиентов-->
+        <Grid x:Name="addIngredientPage" IsVisibleChanged="AddIngredientPage_IsVisibleChanged" Visibility="Hidden" HorizontalAlignment="Stretch" Margin="124,71,10,10">
+            <Label HorizontalAlignment="Center" VerticalAlignment="Center" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">
+                <Grid x:Name="addIngredientContent">
+                    <Label FontFamily="Comic Sans MS Bold" FontSize="15" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="125">Наименование:</Label>
+                    <TextBox x:Name="ingredientName" BorderBrush="Black" FontFamily="Comic Sans MS Bold" VerticalContentAlignment="Center" Padding="2" FontSize="15" Margin="130,0,0,0" HorizontalAlignment="Left" Width="476" Height="31" VerticalAlignment="Top" />
+                    <Label FontFamily="Comic Sans MS Bold" FontSize="15" Margin="24,36,0,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="31" VerticalAlignment="Top">Цена (руб.):</Label>
+                    <TextBox x:Name="ingredientPrice" DataObject.Pasting="IngredientValuePasting" PreviewTextInput="IngredientValuePreviewTextInput" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2" Margin="130,36,0,0" FontFamily="Comic Sans MS Bold" FontSize="15" HorizontalAlignment="Left" Width="130" Height="31" VerticalAlignment="Top"/>
+                    <Label FontFamily="Comic Sans MS Bold" FontSize="15" Margin="2,72,0,0" HorizontalAlignment="Left" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="31" VerticalAlignment="Top">За количество:</Label>
+                    <TextBox x:Name="ingredientCountUnit" DataObject.Pasting="IngredientValuePasting" PreviewTextInput="IngredientValuePreviewTextInput" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2" Margin="130,72,0,0" FontFamily="Comic Sans MS Bold" FontSize="15" VerticalAlignment="Top" Height="31" HorizontalAlignment="Left" Width="75"/>
+                    <ComboBox x:Name="units" FontFamily="Comic Sans MS Bold" FontSize="15" HorizontalAlignment="Left" BorderBrush="Black" VerticalAlignment="Top" Margin="210,72,0,0" Height="31" Width="70"></ComboBox>
+                    <Label x:Name="ingredientCountCaption" FontFamily="Comic Sans MS Bold" FontSize="15" Margin="-13,108,0,0" HorizontalAlignment="Left" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="31" VerticalAlignment="Top" >В холодильнике:</Label>
+                    <TextBox x:Name="ingredientCount" DataObject.Pasting="IngredientValuePasting" PreviewTextInput="IngredientValuePreviewTextInput"  BorderBrush="Black" VerticalContentAlignment="Center" Padding="2" Margin="130,108,0,0" FontFamily="Comic Sans MS Bold" FontSize="15" VerticalAlignment="Top" Height="31" HorizontalAlignment="Left" Width="75"/>
+                </Grid>
+            </Label>
+            <Button x:Name="addIngr" Click="AddIngr_Click" VerticalAlignment="Bottom" Width="109" HorizontalAlignment="Center" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="130,0,239,10">Добавить</Button>
+            <Button x:Name="cancel" Click="Cancel_Click" VerticalAlignment="Bottom" Width="109" HorizontalAlignment="Center" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="244,0,125,10">Отменить</Button>
+        </Grid>
+
+        <!--Форма добавления блюд-->
+        <Grid x:Name="addProductPage" IsVisibleChanged="AddProductPage_IsVisibleChanged" Visibility="Hidden" HorizontalAlignment="Stretch" Margin="124,71,10,10">
+            <Label HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid  x:Name="addProductContent" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Label FontFamily="Comic Sans MS Bold" FontSize="15" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="125" Margin="63,0,0,0">Наименование:</Label>
+                    <TextBox x:Name="productName" BorderBrush="Black" FontFamily="Comic Sans MS Bold" VerticalContentAlignment="Center" Padding="2" FontSize="15" HorizontalAlignment="Left" Width="476" Height="31" VerticalAlignment="Top" Margin="193,0,0,0" />
+                    <Label FontFamily="Comic Sans MS Bold" FontSize="15" Margin="87,36,0,0" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" HorizontalAlignment="Left" Height="31" VerticalAlignment="Top">Цена (руб.):</Label>
+                    <TextBox x:Name="productPrice" DataObject.Pasting="IngredientValuePasting" PreviewTextInput="IngredientValuePreviewTextInput" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2" Margin="193,36,0,0" FontFamily="Comic Sans MS Bold" FontSize="15" HorizontalAlignment="Left" Width="130" Height="31" VerticalAlignment="Top"/>
+                    <Label FontFamily="Comic Sans MS Bold" FontSize="15" Margin="87,72,0,0" HorizontalAlignment="Left" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="31" VerticalAlignment="Top">Тип блюда:</Label>
+                    <ComboBox x:Name="productTypeAdd" FontFamily="Comic Sans MS Bold" FontSize="15" HorizontalAlignment="Left" BorderBrush="Black" VerticalAlignment="Top" Margin="193,72,0,0" Height="31" Width="130"></ComboBox>
+                    <Label FontFamily="Comic Sans MS Bold" FontSize="15" Margin="10,108,0,0" HorizontalAlignment="Left" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="31" VerticalAlignment="Top" >Время приготовления:</Label>
+                    <xctk:MaskedTextBox x:Name="productCookingTime" Mask="00:00:00" BorderBrush="Black" VerticalContentAlignment="Center" Padding="2" Margin="193,108,0,0" FontFamily="Comic Sans MS Bold" FontSize="15" VerticalAlignment="Top" Height="31" HorizontalAlignment="Left" Width="130"/>
+                    <Label FontFamily="Comic Sans MS Bold" FontSize="15" Margin="76,144,0,0" HorizontalAlignment="Left" HorizontalContentAlignment="Right" VerticalContentAlignment="Center" Height="31" VerticalAlignment="Top">Изображение:</Label>
+                    <TextBox x:Name="imgPath" FontFamily="Comic Sans MS Bold" FontSize="15" HorizontalAlignment="Left" BorderBrush="Black" VerticalAlignment="Top" Margin="193,144,0,0" Height="31" Width="441"></TextBox>
+                    <Button x:Name="findFile" Click="FindFile_Click" VerticalAlignment="Top" Width="32" HorizontalAlignment="Left" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="639,143,0,0" Height="31">...</Button>
+                </Grid>
+            </Label>
+            <Button x:Name="addProd" Click="AddProd_Click" VerticalAlignment="Bottom" Width="109" HorizontalAlignment="Center" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="130,0,239,10">Добавить</Button>
+            <Button x:Name="cancelProd" Click="Cancel_Click" VerticalAlignment="Bottom" Width="109" HorizontalAlignment="Center" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Margin="244,0,125,10">Отменить</Button>
+        </Grid>
+
+        <!--Список блюд-->
+        <Grid x:Name="productsPage" ContextMenuOpening="ProductsPage_ContextMenuOpening" IsVisibleChanged="ProductsPage_IsVisibleChanged" Visibility="Hidden" Margin="124,71,10,10">
+            <Grid VerticalAlignment="Top">
+                <Label FontFamily="Comic Sans MS" FontSize="15" HorizontalAlignment="Left" VerticalContentAlignment="Center">Категория:</Label>
+                <ComboBox x:Name="productTypes" FontFamily="Comic Sans MS" SelectionChanged="ProductTypes_SelectionChanged" FontSize="15" BorderBrush="Black" HorizontalAlignment="Left" Margin="93,0,-133,0" Width="180"></ComboBox>
+                <Label FontFamily="Comic Sans MS" FontSize="15" VerticalContentAlignment="Center" Margin="428,0,0,0" HorizontalAlignment="Left" Width="121">Наименование:</Label>
+                <TextBox x:Name="search" TextChanged="Search_TextChanged" BorderBrush="Black" FontFamily="Comic Sans MS" FontSize="15" Padding="2" Margin="554,0,0,0"/>
+            </Grid>
+            <CheckBox x:Name="onlyHave" VerticalContentAlignment="Center" Checked="OnlyHave_Checked" Unchecked="OnlyHave_Unchecked" VerticalAlignment="Top" FontFamily="Comic Sans MS" FontSize="15" Margin="5,36,0,0">Показывать только блюда, на которые хватает ингредиентов</CheckBox>
+            <ListView x:Name="products" SelectionChanged="Products_SelectionChanged" ScrollViewer.HorizontalScrollBarVisibility="Disabled" Margin="0,61,0,0" BorderThickness="1" BorderBrush="Black">
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+            </ListView>
+
+            <Grid.ContextMenu>
+                <ContextMenu>
+                    <MenuItem x:Name="addProductCM" Header="Создать" Click="AddProductCM_Click"/>
+                    <MenuItem x:Name="productEditCM" Header="Изменить блюдо" Click="ProductEditCM_Click"/>
+                    <MenuItem x:Name="recipeEditCM" Header="Изменить рецепт" Click="RecipeEditCM_Click"/>
+                    <MenuItem x:Name="dropProductCM" Header="Удалить" Click="DropProductCM_Click">
+                        <MenuItem.Icon>
+                            <Image Source="./Resources/drop.png"/>
+                        </MenuItem.Icon>
+                    </MenuItem>
+                </ContextMenu>
+            </Grid.ContextMenu>
+        </Grid>
+
+        <!--Список ингредиентов-->
+        <Grid x:Name="ingredientsPage" IsVisibleChanged="IngredientsPage_IsVisibleChanged" Visibility="Hidden" Margin="124,71,10,10">
+            <Label x:Name="ingredientsCount" FontFamily="Comic Sans MS" VerticalContentAlignment="Center" FontSize="15" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,10,0,0">0 наименований</Label>
+            <Label x:Name="ingredientsSummary" FontFamily="Comic Sans MS" VerticalContentAlignment="Center" FontSize="15" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,10,0,0">Запасов в холодильнике на сумму (руб.): NNNN</Label>
+
+            <ScrollViewer HorizontalScrollBarVisibility="Auto" Margin="0,46,0,55">
+                <StackPanel>
+                    <Grid x:Name="ingredients" Margin="0,0,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="70"/>
+                        </Grid.RowDefinitions>
+
+                        <Label x:Name="ingredientsH1" FontFamily="Comic Sans MS" Grid.Column="0" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="Наименование ингредиента"/>
+                        <Label x:Name="ingredientsH2" FontFamily="Comic Sans MS" Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="Цена"/>
+                        <Label x:Name="ingredientsH3" FontFamily="Comic Sans MS" Grid.Column="2" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="В наличии"/>
+                        <Label x:Name="ingredientsH4" FontFamily="Comic Sans MS" Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="Действия"/>
+
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Grid HorizontalAlignment="Left" VerticalAlignment="Bottom" Height="56" RenderTransformOrigin="0.5,0.5" Width="300">
+                <Grid.RenderTransform>
+                    <TransformGroup>
+                        <ScaleTransform ScaleY="-1"/>
+                        <SkewTransform/>
+                        <RotateTransform/>
+                        <TranslateTransform/>
+                    </TransformGroup>
+                </Grid.RenderTransform>
+
+                <Button x:Name="firstIngrPage" Click="FirstIngrPage_Click" Background="#FFD6CA47" HorizontalAlignment="Left" Width="28" FontFamily="Comic Sans MS" FontSize="15" Margin="10,14,0,14">
+                    &lt;&lt;
+                </Button>
+                <Button x:Name="backIngrPage" Click="BackIngrPage_Click" Background="#FFD6CA47" HorizontalAlignment="Left" Height="28" Width="28" FontFamily="Comic Sans MS" FontSize="15" VerticalAlignment="Center" Margin="43,14,0,14">
+                    &lt;
+                </Button>
+                <Label FontFamily="Comic Sans MS" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" FontSize="15" x:Name="pagesCount" Height="28" VerticalAlignment="Center" Margin="76,14,134,14" RenderTransformOrigin="0.5,0.5">
+                    <Label.RenderTransform>
+                        <TransformGroup>
+                            <ScaleTransform ScaleY="-1"/>
+                            <SkewTransform/>
+                            <RotateTransform/>
+                            <TranslateTransform/>
+                        </TransformGroup>
+                    </Label.RenderTransform>
+                </Label>
+                <Button x:Name="nextIngrPage" Click="NextIngrPage_Click" Background="#FFD6CA47" Height="28" FontFamily="Comic Sans MS" FontSize="15" VerticalAlignment="Center" Margin="0,14,101,14" HorizontalAlignment="Right" Width="28">
+                    &gt;
+                </Button>
+                <Button x:Name="lastIngrPage" Click="LastIngrPage_Click" Background="#FFD6CA47" HorizontalAlignment="Right" Height="28" Width="28" FontFamily="Comic Sans MS" FontSize="15" VerticalAlignment="Center" Margin="0,14,68,14">
+                    &gt;&gt;
+                </Button>
+
+            </Grid>
+
+            <Button x:Name="addProduct" Click="AddProduct_Click" Width="50" Height="50" FontFamily="Comic Sans MS" FontSize="50" VerticalAlignment="Bottom" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" HorizontalAlignment="Right" Style="{DynamicResource buttStyle}">
+                <Button.Resources>
+                    <Style x:Key="FocusVisual">
+                        <Setter Property="Control.Template">
+                            <Setter.Value>
+                                <ControlTemplate>
+                                    <Rectangle Margin="2" SnapsToDevicePixels="true" Stroke="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" StrokeThickness="1" StrokeDashArray="1 2"/>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                    <SolidColorBrush x:Key="Button.Static.Background" Color="#FFDDDDDD"/>
+                    <SolidColorBrush x:Key="Button.Static.Border" Color="#FF707070"/>
+                    <SolidColorBrush x:Key="Button.MouseOver.Background" Color="#FFBEE6FD"/>
+                    <SolidColorBrush x:Key="Button.MouseOver.Border" Color="#FF3C7FB1"/>
+                    <SolidColorBrush x:Key="Button.Pressed.Background" Color="#FFC4E5F6"/>
+                    <SolidColorBrush x:Key="Button.Pressed.Border" Color="#FF2C628B"/>
+                    <SolidColorBrush x:Key="Button.Disabled.Background" Color="#FFF4F4F4"/>
+                    <SolidColorBrush x:Key="Button.Disabled.Border" Color="#FFADB2B5"/>
+                    <SolidColorBrush x:Key="Button.Disabled.Foreground" Color="#FF838383"/>
+                    <Style x:Key="buttStyle" TargetType="{x:Type Button}">
+                        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}"/>
+                        <Setter Property="Background" Value="{StaticResource Button.Static.Background}"/>
+                        <Setter Property="BorderBrush" Value="{StaticResource Button.Static.Border}"/>
+                        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                        <Setter Property="VerticalContentAlignment" Value="Center"/>
+                        <Setter Property="Padding" Value="1"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="{x:Type Button}">
+                                    <Border x:Name="border" CornerRadius="100" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" SnapsToDevicePixels="true">
+                                        <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="Stretch" Margin="13,-15,-1,-1" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="Stretch"/>
+                                    </Border>
+                                    <ControlTemplate.Triggers>
+                                        <Trigger Property="IsDefaulted" Value="true">
+                                            <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource {x:Static SystemColors.HighlightBrushKey}}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsMouseOver" Value="true">
+                                            <Setter Property="Background" TargetName="border" Value="{StaticResource Button.MouseOver.Background}"/>
+                                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.MouseOver.Border}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsPressed" Value="true">
+                                            <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Pressed.Background}"/>
+                                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Pressed.Border}"/>
+                                        </Trigger>
+                                        <Trigger Property="IsEnabled" Value="false">
+                                            <Setter Property="Background" TargetName="border" Value="{StaticResource Button.Disabled.Background}"/>
+                                            <Setter Property="BorderBrush" TargetName="border" Value="{StaticResource Button.Disabled.Border}"/>
+                                            <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{StaticResource Button.Disabled.Foreground}"/>
+                                        </Trigger>
+                                    </ControlTemplate.Triggers>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Button.Resources> +
+            </Button>
+        </Grid>
+
+        <!--Рецепт для товара-->
+        <Grid x:Name="craftPage" IsVisibleChanged="CraftPage_IsVisibleChanged" Visibility="Hidden" Margin="119,71,0,10">
+            <Label x:Name="productType" FontFamily="Comic Sans MS" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left">Категория:</Label>
+            <Label x:Name="craftingTime" FontFamily="Comic Sans MS" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="0,31,0,0">Время на приготовление:</Label>
+            <Label x:Name="productCountCaption" FontFamily="Comic Sans MS" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,0,340,0" Width="87">Порций:</Label>
+
+            <Button x:Name="incr" Click="Incr_Click" Background="#FFD6CA47" Height="24" Width="24" FontFamily="Comic Sans MS" FontSize="15" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,7,212,0">+</Button>
+            <TextBox x:Name="productCount" VerticalAlignment="Top" IsReadOnly="True" HorizontalAlignment="Right" FontFamily="Comic Sans MS" FontSize="15" BorderBrush="Black" Margin="489,3,241,0" Height="32" Width="65" HorizontalContentAlignment="Center" VerticalContentAlignment="Center">1</TextBox>
+            <Button x:Name="decr" Visibility="Hidden" Click="Decr_Click" Background="#FFD6CA47" Height="24" Width="24" FontFamily="Comic Sans MS" FontSize="15" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,7,311,0">-</Button>
+
+            <Label x:Name="summary" FontFamily="Comic Sans MS" FontSize="15" VerticalAlignment="Top" HorizontalAlignment="Right" Margin="0,31,10,0" Width="417">Общая стоимость: 0</Label>
+
+            <Grid Margin="0,67,0,48">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+
+                <Label BorderThickness="0 , 2, 2 , 2" BorderBrush="Black" Grid.Column="0"/>
+                <Label Grid.Column="0" FontFamily="Comic Sans MS" FontSize="20" VerticalAlignment="Top" HorizontalContentAlignment="Center">Ингредиенты:</Label>
+
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" Margin="10,53,10,98">
+                    <StackPanel>
+                        <Grid x:Name="ingredientsRecipe">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="50"/>
+                                <ColumnDefinition Width="auto"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="40"/>
+                            </Grid.RowDefinitions>
+
+                            <Label x:Name="ingredientsRecipeH1" FontFamily="Comic Sans MS" Grid.Column="0" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center"/>
+                            <Label x:Name="ingredientsRecipeH2" FontFamily="Comic Sans MS" Grid.Column="1" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="Наименование"/>
+                            <Label x:Name="ingredientsRecipeH3" FontFamily="Comic Sans MS" Grid.Column="2" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="Кол-во"/>
+                            <Label x:Name="ingredientsRecipeH4" FontFamily="Comic Sans MS" Grid.Column="3" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="Ед. изм."/>
+                            <Label x:Name="ingredientsRecipeH5" FontFamily="Comic Sans MS" Grid.Column="4" Grid.Row="0" BorderBrush="Black" BorderThickness="1" FontSize="15" Background="#FFCCCCCC" VerticalContentAlignment="Center" Content="Стоимость"/>
+
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Label BorderThickness="0 , 2, 0 , 2" BorderBrush="Black" Grid.Column="1"/>
+
+                <Label Grid.Column="1" FontFamily="Comic Sans MS" FontSize="20" VerticalAlignment="Top" HorizontalContentAlignment="Center">Приготовление:</Label>
+                <TextBox x:Name="recipeText" HorizontalScrollBarVisibility="Disabled" AcceptsReturn="True" VerticalScrollBarVisibility="Auto" Margin="10,53,10,98" Padding="5" BorderBrush="Black" TextWrapping="Wrap" FontFamily="Comic Sans MS" FontSize="15" Grid.Column="1"/>
+            </Grid>
+            <Grid HorizontalAlignment="Center" VerticalAlignment="Bottom">
+                <Button x:Name="cooking" Click="Cooking_Click" Padding="5" Background="#FFD6CA47" FontFamily="Comic Sans MS" FontSize="15" Height="33" VerticalAlignment="Top" HorizontalAlignment="Left" Width="78">Готовим!</Button>
+            </Grid>
+        </Grid>
+
+        <Grid x:Name="authPage" IsVisibleChanged="AuthPage_IsVisibleChanged" Margin="124,72,10,10" Visibility="Hidden">
+            <Label HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid>
+                    <Label HorizontalContentAlignment="Right" FontFamily="Comic Sans MS Bold" FontSize="15" Height="30" VerticalAlignment="Top" HorizontalAlignment="Left" Width="62" Margin="10,0,0,0">Логин:</Label>
+                    <TextBox x:Name="userName" FontFamily="Comic Sans MS Bold" FontSize="15" VerticalContentAlignment="Center" Height="31" BorderBrush="Black" VerticalAlignment="Top" Margin="77,0,0,0" HorizontalAlignment="Left" Width="250" />
+                    <Label VerticalAlignment="Top" HorizontalContentAlignment="Right" FontFamily="Comic Sans MS Bold" FontSize="15" Margin="0,35,0,0" HorizontalAlignment="Left" Width="72">Пароль:</Label>
+                    <PasswordBox x:Name="userPassword" FontFamily="Comic Sans MS Bold" FontSize="15" PasswordChar="*" VerticalContentAlignment="Center" Height="31" BorderBrush="Black" VerticalAlignment="Top" Margin="77,35,0,0" Width="250" HorizontalAlignment="Left" />
+                    <Button x:Name="signIn" Click="SignIn_Click" HorizontalContentAlignment="Center" VerticalAlignment="Top" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" HorizontalAlignment="Center" Width="70" Margin="128,71,129,0">Войти</Button>
+                    <Button x:Name="signUp" Click="SignUp_Click" Background="#FFD6CA47" Width="150" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold" Height="34" VerticalAlignment="Top" HorizontalAlignment="Center" Margin="128,109,129,-39">Регистрация</Button>
+                </Grid>
+            </Label>
+        </Grid>
+
+        <Grid x:Name="regPage" IsVisibleChanged="RegPage_IsVisibleChanged" Margin="124,72,10,10" Visibility="Hidden">
+            <Label HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid>
+                    <Label HorizontalContentAlignment="Right" FontFamily="Comic Sans MS Bold" FontSize="15" Height="31" VerticalAlignment="Top" HorizontalAlignment="Left" Width="61" Margin="170,0,0,0" >Логин:</Label>
+                    <TextBox x:Name="newUserName" FontFamily="Comic Sans MS Bold" FontSize="15" VerticalContentAlignment="Center" Height="31" BorderBrush="Black" VerticalAlignment="Top" Margin="236,0,0,0" HorizontalAlignment="Left" Width="250" />
+                    <Label VerticalAlignment="Top" HorizontalContentAlignment="Right" FontFamily="Comic Sans MS Bold" FontSize="15" Margin="159,36,0,0" HorizontalAlignment="Left" Width="72">Пароль:</Label>
+                    <PasswordBox x:Name="newUserPassword" FontFamily="Comic Sans MS Bold" FontSize="15" PasswordChar="*" VerticalContentAlignment="Center" Height="31" BorderBrush="Black" VerticalAlignment="Top" Margin="236,36,0,0" Width="250" HorizontalAlignment="Left" />
+                    <Label VerticalAlignment="Top" HorizontalContentAlignment="Right" FontFamily="Comic Sans MS Bold" FontSize="15" Margin="10,72,0,0" HorizontalAlignment="Left" Width="221">Подтвердите пароль:</Label>
+                    <PasswordBox x:Name="confirmPassword" FontFamily="Comic Sans MS Bold" FontSize="15" PasswordChar="*" VerticalContentAlignment="Center" Height="31" BorderBrush="Black" VerticalAlignment="Top" Margin="236,72,0,0" Width="250" HorizontalAlignment="Left" />
+                    <Button x:Name="reg" Click="Reg_Click" HorizontalContentAlignment="Center" VerticalAlignment="Top" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold"  HorizontalAlignment="Center" Width="117" Margin="180,108,189,-38">Регистрация</Button>
+                    <Button x:Name="backAuth" Click="Exit_Click" HorizontalContentAlignment="Center" VerticalAlignment="Top" Background="#FFD6CA47" FontSize="15" Padding="5" BorderBrush="Black" FontFamily="Comic Sans MS Bold"  HorizontalAlignment="Center" Width="117" Margin="180,146,189,-76">Назад</Button>
+                </Grid>
+            </Label>
+        </Grid>
+
     </Grid>
+
 </Window>
